@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InteriorAI — Design. Build. Live. | Autonomous Interior & Exterior Platform</title>
+    
+    <meta name="description" content="AI-Powered End-to-End Interior and Exterior Design, Budgeting, Contractor Matching, and Project Execution Platform.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            cyan: '#06b6d4',
+                            indigo: '#6366f1',
+                            violet: '#8b5cf6',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons, Chart.js & Three.js CDNs -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        .glass-panel {
+            background: rgba(4, 8, 21, 0.84);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            box-shadow: 0 40px 120px -80px rgba(14, 36, 79, 0.75);
+        }
+        
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 60px -30px rgba(59, 130, 246, 0.25);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(59, 130, 246, 0.55);
+            box-shadow: 0 30px 70px -20px rgba(59, 130, 246, 0.35);
+            transform: translateY(-4px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ffffff 20%, #60a5fa 60%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-text-gold {
+            background: linear-gradient(135deg, #ffffff 30%, #f59e0b 70%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-text-purple {
+            background: linear-gradient(135deg, #ffffff 30%, #a78bfa 70%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-background {
+            background-color: #02060f;
+            background-image:
+                radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 22%),
+                radial-gradient(circle at 80% 15%, rgba(168, 85, 247, 0.16), transparent 20%),
+                radial-gradient(circle at 45% 70%, rgba(16, 185, 129, 0.1), transparent 25%);
+        }
+
+        .hero-deco-circle {
+            position: absolute;
+            border-radius: 9999px;
+            filter: blur(44px);
+            opacity: 0.7;
+            z-index: 0;
+        }
+
+        .hero-deco-one { width: 260px; height: 260px; top: -40px; left: -40px; background: rgba(59, 130, 246, 0.14); }
+        .hero-deco-two { width: 180px; height: 180px; top: 40%; right: -60px; background: rgba(6, 182, 212, 0.16); }
+        .hero-deco-three { width: 200px; height: 200px; bottom: 24px; left: 10%; background: rgba(168, 85, 247, 0.12); }
+
+        .feature-chip {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(96, 165, 250, 0.16);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+        }
+
+        .hero-card-highlight {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.65));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 40px 120px -80px rgba(59, 130, 246, 0.6);
+        }
+
+        .pulse-ring {
+            width: 12px;
+            height: 12px;
+            border-radius: 9999px;
+            background: #38bdf8;
+            box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.75);
+            animation: pulse 1.8s ease-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.75); }
+            70% { box-shadow: 0 0 0 12px rgba(56, 189, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+        }
+
+        /* Print CSS for Clean Invoice & Contract Export */
+        @media print {
+            body * { visibility: hidden; }
+            #contract-export-modal, #contract-export-modal * { visibility: visible; }
+            #contract-export-modal { position: absolute; left: 0; top: 0; width: 100%; color: #000 !important; background: #fff !important; padding: 30px; }
+            .no-print { display: none !important; }
+        }
+
+        /* Before / After Slider Styling */
+        .before-after-container {
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        .before-image {
+            position: absolute;
+            top: 0; left: 0; height: 100%; width: 100%;
+            object-fit: cover;
+        }
+        .after-image-clip {
+            position: absolute;
+            top: 0; left: 0; height: 100%; width: 50%;
+            overflow: hidden;
+            border-right: 3px solid #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+        }
+        .after-image-clip img {
+            height: 100%; width: 100%;
+            object-fit: cover;
+            max-width: none;
+        }
+
+        /* Custom Cursor styling */
+        @media (hover: hover) and (pointer: fine) {
+            .custom-cursor {
+                pointer-events: none;
+                position: fixed;
+                top: 0; left: 0;
+                z-index: 9999;
+                border-radius: 50%;
+                transition: transform 0.08s ease-out;
+            }
+            #cursor-dot { width: 8px; height: 8px; background-color: #3b82f6; transform: translate(-50%, -50%); }
+            #cursor-ring { width: 36px; height: 36px; border: 1.5px solid rgba(59, 130, 246, 0.4); transform: translate(-50%, -50%); }
+        }
+    </style>
+</head>
+<body class="page-background text-slate-100 font-sans antialiased overflow-x-hidden selection:bg-blue-600 selection:text-white">
+
+    <!-- Custom Cursor -->
+    <div id="cursor-dot" class="custom-cursor hidden md:block"></div>
+    <div id="cursor-ring" class="custom-cursor hidden md:block"></div>
+
+    <!-- Scroll Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-[3px] bg-slate-900 z-50">
+        <div id="scroll-progress" class="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-indigo-500 w-0 transition-all duration-75"></div>
+    </div>
+
+    <!-- Dynamic Canvas Background -->
+    <canvas id="hero-bg-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-25"></canvas>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast-container" class="fixed top-24 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Glassmorphic Header Navigation -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-2xl bg-[#030712]/80 border-b border-white/10" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <a href="#" class="flex items-center space-x-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-cyan-500 to-indigo-500 p-[1px] shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 transition-all">
+                    <div class="w-full h-full bg-[#030712] rounded-[11px] flex items-center justify-center">
+                        <i data-lucide="home" class="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">INTERIOR<span class="text-blue-400">AI</span></span>
+                    <span class="text-[9px] font-mono tracking-widest text-blue-400/80 uppercase -mt-1">Design. Build. Live.</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden lg:flex items-center space-x-1 glass-panel px-4 py-1.5 rounded-full border border-white/10 text-xs font-semibold text-slate-300">
+                <a href="#designer" class="px-3.5 py-2 hover:text-white hover:bg-white/5 rounded-full transition flex items-center gap-1.5">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-400"></i> AI Studio
+                </a>
+                <a href="#budget" class="px-3.5 py-2 hover:text-white hover:bg-white/5 rounded-full transition flex items-center gap-1.5">
+                    <i data-lucide="calculator" class="w-3.5 h-3.5 text-cyan-400"></i> Budget Engine
+                </a>
+                <a href="#materials" class="px-3.5 py-2 hover:text-white hover:bg-white/5 rounded-full transition flex items-center gap-1.5">
+                    <i data-lucide="sofa" class="w-3.5 h-3.5 text-indigo-400"></i> Catalog
+                </a>
+                <a href="#planner" class="px-3.5 py-2 hover:text-white hover:bg-white/5 rounded-full transition flex items-center gap-1.5">
+                    <i data-lucide="layout" class="w-3.5 h-3.5 text-emerald-400"></i> 2D/3D Planner
+                </a>
+                <a href="#timeline" class="px-3.5 py-2 hover:text-white hover:bg-white/5 rounded-full transition flex items-center gap-1.5">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i> Progress
+                </a>
+                <a href="#contractors" class="px-3.5 py-2 hover:text-white hover:bg-white/5 rounded-full transition flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-3.5 h-3.5 text-rose-400"></i> Contractors
+                </a>
+                <a href="#gallery" class="px-3.5 py-2 hover:text-white hover:bg-white/5 rounded-full transition flex items-center gap-1.5">
+                    <i data-lucide="image" class="w-3.5 h-3.5 text-fuchsia-400"></i> Gallery
+                </a>
+                <a href="#dashboard" class="px-3.5 py-2 hover:text-white hover:bg-white/5 rounded-full transition flex items-center gap-1.5">
+                    <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-violet-400"></i> Dashboard
+                </a>
+            </nav>
+
+            <!-- Actions & Status Badge -->
+            <div class="hidden sm:flex items-center space-x-3">
+                <button onclick="openApiKeyModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-slate-300 hover:bg-white/10 transition">
+                    <i data-lucide="key" class="w-3.5 h-3.5 text-amber-400"></i>
+                    <span id="api-key-status-badge">Gemini Studio API</span>
+                </button>
+
+                <button onclick="openAiConsultantModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 text-white font-bold text-xs shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition flex items-center gap-2">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                    <span>Start Project Quiz</span>
+                </button>
+            </div>
+
+            <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden glass-panel border-b border-white/10 px-6 py-4 space-y-3">
+            <a href="#designer" onclick="toggleMobileMenu()" class="block text-slate-200 hover:text-blue-400 py-1 text-sm font-medium">1. AI Studio</a>
+            <a href="#budget" onclick="toggleMobileMenu()" class="block text-slate-200 hover:text-cyan-400 py-1 text-sm font-medium">2. Budget Estimator</a>
+            <a href="#materials" onclick="toggleMobileMenu()" class="block text-slate-200 hover:text-indigo-400 py-1 text-sm font-medium">3. Material Catalog</a>
+            <a href="#planner" onclick="toggleMobileMenu()" class="block text-slate-200 hover:text-emerald-400 py-1 text-sm font-medium">4. 2D/3D Planner</a>
+            <a href="#timeline" onclick="toggleMobileMenu()" class="block text-slate-200 hover:text-amber-400 py-1 text-sm font-medium">5. Telemetry & Progress</a>
+            <a href="#contractors" onclick="toggleMobileMenu()" class="block text-slate-200 hover:text-rose-400 py-1 text-sm font-medium">6. Contractors</a>
+            <a href="#gallery" onclick="toggleMobileMenu()" class="block text-slate-200 hover:text-fuchsia-400 py-1 text-sm font-medium">7. Gallery</a>
+            <a href="#dashboard" onclick="toggleMobileMenu()" class="block text-slate-200 hover:text-violet-400 py-1 text-sm font-medium">8. Dashboard & PDF Contract</a>
+            <button onclick="openApiKeyModal(); toggleMobileMenu();" class="w-full text-left py-2 text-xs font-mono text-amber-400">🔑 Configure Gemini Key</button>
+        </div>
+    </header>
+
+    <main class="relative z-10">
+        <div class="pointer-events-none absolute inset-0 overflow-hidden">
+            <div class="hero-deco-circle hero-deco-one"></div>
+            <div class="hero-deco-circle hero-deco-two"></div>
+            <div class="hero-deco-circle hero-deco-three"></div>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="relative min-h-[90vh] flex items-center justify-center pt-8 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+            <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Hero Left Copy -->
+                <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-blue-500/25 text-xs font-semibold text-blue-300 shadow-sm shadow-blue-500/10">
+                        <span class="pulse-ring"></span>
+                        <span class="font-mono">AUTONOMOUS INTERIOR & EXTERIOR PLATFORM</span>
+                    </div>
+
+                    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.05] text-white">
+                        Transform Your Home <br> Into Reality with <br>
+                        <span class="gradient-text">Autonomous AI Precision</span>
+                    </h1>
+
+                    <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+                        One platform for AI-powered interior and exterior design, intelligent budgeting, contractor matchmaking, and turnkey project execution.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto lg:mx-0 mt-6">
+                        <div class="feature-chip rounded-3xl px-4 py-3 text-[11px] uppercase tracking-[0.2em] text-slate-200">
+                            <span class="text-cyan-300 font-bold">98% Accuracy</span> in cost estimation
+                        </div>
+                        <div class="feature-chip rounded-3xl px-4 py-3 text-[11px] uppercase tracking-[0.2em] text-slate-200">
+                            <span class="text-blue-300 font-bold">Fast turnarounds</span> with AI workflows
+                        </div>
+                        <div class="feature-chip rounded-3xl px-4 py-3 text-[11px] uppercase tracking-[0.2em] text-slate-200">
+                            <span class="text-violet-300 font-bold">Fully visual</span> 2D/3D planning
+                        </div>
+                    </div>
+
+                    <!-- Quick Project Goal Switcher Widget -->
+                    <div class="p-4 glass-card rounded-2xl border border-white/10 space-y-3 text-left">
+                        <label class="block text-xs font-mono uppercase text-blue-400 font-bold tracking-wider">
+                            ⚡ Select Your Property Goal:
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-medium">
+                            <button onclick="quickSelectGoal('2BHK Apartment')" class="goal-btn py-2 px-3 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-center hover:bg-blue-600/30 transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="building-2" class="w-3.5 h-3.5"></i> 2BHK Apartment
+                            </button>
+                            <button onclick="quickSelectGoal('3BHK Luxury Villa')" class="goal-btn py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-center hover:bg-white/10 transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="home" class="w-3.5 h-3.5"></i> 3BHK Villa
+                            </button>
+                            <button onclick="quickSelectGoal('Modular Kitchen')" class="goal-btn py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-center hover:bg-white/10 transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="utensils" class="w-3.5 h-3.5"></i> Modular Kitchen
+                            </button>
+                            <button onclick="quickSelectGoal('Exterior Elevation')" class="goal-btn py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-center hover:bg-white/10 transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="sun" class="w-3.5 h-3.5"></i> Exterior Facade
+                            </button>
+                            <button onclick="quickSelectGoal('Office Workspace')" class="goal-btn py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-center hover:bg-white/10 transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="briefcase" class="w-3.5 h-3.5"></i> AI Office
+                            </button>
+                            <button onclick="quickSelectGoal('Full Home Remodel')" class="goal-btn py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-center hover:bg-white/10 transition flex items-center justify-center gap-1.5">
+                                <i data-lucide="hammer" class="w-3.5 h-3.5"></i> Full Remodel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                        <a href="#designer" class="w-full sm:w-auto px-8 py-4 rounded-3xl font-bold text-sm bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 text-white shadow-2xl shadow-cyan-500/20 hover:shadow-cyan-500/30 hover:scale-[1.03] transition flex items-center justify-center gap-2">
+                            <span>Explore Design Studio</span>
+                            <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                        </a>
+                        <button onclick="openAiConsultantModal()" class="w-full sm:w-auto px-6 py-4 rounded-3xl font-semibold text-sm glass-card text-slate-100 hover:bg-white/10 transition flex items-center justify-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-300"></i>
+                            <span>Launch AI Interior Consultant</span>
+                        </button>
+                        <a href="#contact" class="w-full sm:w-auto px-6 py-4 rounded-3xl font-semibold text-sm text-white bg-white/10 border border-white/15 hover:bg-white/20 transition flex items-center justify-center gap-2">
+                            <i data-lucide="phone-call" class="w-4 h-4 text-emerald-300"></i>
+                            <span>Book a Free Call</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hero Right Live Before/After Interactive Card -->
+                <div class="lg:col-span-5 w-full">
+                    <div class="glass-panel hero-card-highlight rounded-3xl p-6 relative space-y-4 overflow-hidden">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.25),_transparent_45%)] pointer-events-none"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between pb-3 border-b border-white/10">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                    <span class="text-xs font-mono text-slate-400 ml-2">interior_ai_render.jpg</span>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-gradient-to-r from-cyan-500 to-blue-500 text-white border border-cyan-500/30">AI RENDER LIVE</span>
+                            </div>
+
+                        <!-- Before / After Slider Canvas Widget -->
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-xs font-mono">
+                                <span class="text-slate-400">Drag Slider to Compare:</span>
+                                <span class="text-blue-400 font-bold" id="hero-style-label">Modern Scandinavian</span>
+                            </div>
+
+                            <div class="before-after-container h-64 rounded-2xl border border-white/10 cursor-ew-resize overflow-hidden relative" id="hero-before-after">
+                                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" alt="Unfurnished raw room" class="before-image">
+                                <div class="after-image-clip" id="hero-after-clip">
+                                    <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80" alt="AI Furnished Luxury Room">
+                                </div>
+                                <div class="absolute inset-y-0 left-1/2 -ml-3 w-6 flex items-center justify-center pointer-events-none">
+                                    <div class="w-6 h-6 rounded-full bg-blue-500 shadow-lg flex items-center justify-center text-white text-[10px]">
+                                        ↔
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                                <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-slate-400 text-[10px]">Estimated Cost</div>
+                                    <div class="text-sm font-bold text-cyan-400">₹10 Lakhs</div>
+                                </div>
+                                <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-slate-400 text-[10px]">Timeline</div>
+                                    <div class="text-sm font-bold text-emerald-400">28 Days</div>
+                                </div>
+                                <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                                    <div class="text-slate-400 text-[10px]">Contractors</div>
+                                    <div class="text-sm font-bold text-amber-400">4 Matched</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Why InteriorAI Works -->
+        <section id="features" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-mono text-cyan-300 uppercase tracking-wider">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> WHY INTERIORAI</div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Everything you need for fast, beautiful home transformation</h2>
+                <p class="text-slate-400 text-sm sm:text-base">From smart upfront quotes to verified trades, AI-generated contracts, and one-click material sourcing — InteriorAI accelerates every step.</p>
+            </div>
+
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-300">
+                        <i data-lucide="cpu" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">AI Budget Forecast</h3>
+                    <p class="text-slate-400 text-sm">Accurate cost planning with instant trade allocations and material recommendation support.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-300">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Verified Contractors</h3>
+                    <p class="text-slate-400 text-sm">Local architects and tradesmen with verified credentials, transparent pricing, and real ratings.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-300">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Live Project Tracking</h3>
+                    <p class="text-slate-400 text-sm">Daily site telemetry and milestone tracking keep your project on schedule and on budget.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-300">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Instant Work Contracts</h3>
+                    <p class="text-slate-400 text-sm">Generate agreements, payment schedules and material specs with a single click.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-300">
+                        <i data-lucide="layout" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">LiveSpace Planning</h3>
+                    <p class="text-slate-400 text-sm">Interactive room layouts with drag-and-drop furniture placement and living-space balance recommendations.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-lime-500/10 text-lime-300">
+                        <i data-lucide="sunrise" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Smart Lighting Design</h3>
+                    <p class="text-slate-400 text-sm">Automated lighting plans for mood, efficiency, and layered ambiance across every space.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-300">
+                        <i data-lucide="box" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Modular Kitchen Suite</h3>
+                    <p class="text-slate-400 text-sm">Configure modern kitchens with intelligent storage, workflow zones, and premium finish suggestions.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-fuchsia-500/10 text-fuchsia-300">
+                        <i data-lucide="wand" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Style Support Library</h3>
+                    <p class="text-slate-400 text-sm">Access curated interior concepts like LiveSpace, Urban Luxe, Cozy Minimalism, and Modern Studio schemes.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Interior & Exterior Designer Studio -->
+        <section id="designer" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-mono text-blue-400 uppercase tracking-wider">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> MODULE 1: AI DESIGN STUDIO
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                    Instant AI <span class="gradient-text">Interior & Exterior Transformation</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Upload a raw room or building photo, choose your aesthetic style, and let Gemini AI generate production designs with materials and lighting.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Studio Parameters Controls -->
+                <div class="lg:col-span-5 glass-card rounded-2xl p-6 space-y-5">
+                    <div class="flex border-b border-white/10 pb-3 gap-2">
+                        <button onclick="setStudioCategory('interior')" id="tab-btn-interior" class="flex-1 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs transition">
+                            🏠 Interior Design
+                        </button>
+                        <button onclick="setStudioCategory('exterior')" id="tab-btn-exterior" class="flex-1 py-2 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 font-bold text-xs transition">
+                            🏢 Exterior Facade
+                        </button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-mono text-slate-300 font-bold">1. Upload Photo / Select Sample:</label>
+                        <div class="p-4 border-2 border-dashed border-white/15 rounded-2xl bg-slate-950/60 text-center space-y-2 hover:border-blue-500/50 transition cursor-pointer" onclick="document.getElementById('room-image-upload').click()">
+                            <i data-lucide="upload-cloud" class="w-8 h-8 mx-auto text-blue-400"></i>
+                            <p class="text-xs text-slate-300 font-medium">Click to upload raw image (PNG / JPG)</p>
+                            <p class="text-[10px] text-slate-500 font-mono">Max size 10MB • Auto-aligned</p>
+                            <input type="file" id="room-image-upload" class="hidden" accept="image/*" onchange="handleRoomUpload(event)">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-mono text-slate-300 font-bold">2. Choose Architectural Style:</label>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-medium" id="style-buttons-grid">
+                            <button onclick="selectDesignStyle('Modern')" class="style-select-btn p-2.5 rounded-xl bg-blue-600/20 border border-blue-500 text-blue-300 text-left hover:bg-blue-600/30 transition">
+                                ✨ Modern Minimal
+                            </button>
+                            <button onclick="selectDesignStyle('Luxury')" class="style-select-btn p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-left hover:bg-white/10 transition">
+                                👑 Luxury Royal
+                            </button>
+                            <button onclick="selectDesignStyle('Scandinavian')" class="style-select-btn p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-left hover:bg-white/10 transition">
+                                🌲 Scandinavian
+                            </button>
+                            <button onclick="selectDesignStyle('Industrial')" class="style-select-btn p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-left hover:bg-white/10 transition">
+                                🧱 Industrial Loft
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="exterior-options-container" class="hidden space-y-2">
+                        <label class="block text-xs font-mono text-slate-300 font-bold">Exterior Highlights:</label>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300">
+                                <input type="checkbox" checked class="accent-blue-500"> Landscaped Garden
+                            </label>
+                            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300">
+                                <input type="checkbox" checked class="accent-blue-500"> Compound Gate
+                            </label>
+                            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300">
+                                <input type="checkbox" class="accent-blue-500"> Infinity Swimming Pool
+                            </label>
+                            <label class="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300">
+                                <input type="checkbox" checked class="accent-blue-500"> Glass Balcony
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="generateAiDesignRender()" id="btn-generate-render" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 text-white font-bold text-xs hover:shadow-lg hover:shadow-blue-500/25 transition flex items-center justify-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Generate AI Render with Gemini</span>
+                    </button>
+                </div>
+
+                <!-- Studio Image Display & Before/After Slider -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+                            <i data-lucide="image" class="w-4 h-4 text-cyan-400"></i> Visual Render Studio
+                        </h3>
+                        <span class="text-xs font-mono text-slate-400">Active Style: <span class="text-blue-400 font-bold" id="studio-active-style">Modern Minimal</span></span>
+                    </div>
+
+                    <div class="before-after-container h-80 sm:h-96 rounded-2xl border border-white/10 overflow-hidden relative" id="studio-before-after">
+                        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80" alt="Before Raw Room" class="before-image" id="studio-before-img">
+                        <div class="after-image-clip" id="studio-after-clip">
+                            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80" alt="After AI Render" id="studio-after-img">
+                        </div>
+                        <div class="absolute inset-y-0 left-1/2 -ml-3 w-6 flex items-center justify-center pointer-events-none">
+                            <div class="w-7 h-7 rounded-full bg-blue-500 shadow-xl border-2 border-white flex items-center justify-center text-white text-xs">
+                                ↔
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2 text-xs font-mono">
+                        <div class="text-blue-400 font-bold flex items-center gap-1.5">
+                            <i data-lucide="info" class="w-4 h-4"></i> AI Design Telemetry Insights:
+                        </div>
+                        <p class="text-slate-300 leading-relaxed" id="studio-ai-insight">
+                            Wall treatment uses Italian Stucco Matte paint (#F4F3EF) combined with warm recessed LED cove lighting (3000K). Furniture consists of engineered oak wood with spill-resistant velvet upholstery.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- AI Budget Estimator Section -->
+        <section id="budget" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-mono text-cyan-400 uppercase tracking-wider">
+                    <i data-lucide="calculator" class="w-3.5 h-3.5"></i> MODULE 2: BUDGET ESTIMATOR
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                    Automated Cost Breakdown & <span class="gradient-text">GST Tax Estimator</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Enter your maximum budget threshold. Our AI automatically optimizes trade allocations across civil work, false ceiling, kitchen, furniture, labor, and GST.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Budget Inputs -->
+                <div class="lg:col-span-5 glass-card rounded-2xl p-6 space-y-5">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+                        <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i> Budget Parameters
+                    </h3>
+
+                    <div>
+                        <label class="block text-xs text-slate-300 font-medium mb-1">Target Total Budget (INR / ₹)</label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-2.5 text-slate-400 font-mono text-xs">₹</span>
+                            <input type="number" id="budget-amount-input" value="1000000" step="50000" oninput="recalculateBudget()" class="w-full pl-8 pr-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1 font-mono">Example: ₹10,00,000 = ₹10 Lakhs</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-300 font-medium mb-1">Property Layout & Size</label>
+                        <select id="budget-layout-select" onchange="recalculateBudget()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+                            <option value="1BHK">1BHK Apartment (600 sq.ft)</option>
+                            <option value="2BHK" selected>2BHK Apartment (1050 sq.ft)</option>
+                            <option value="3BHK">3BHK Villa (1800 sq.ft)</option>
+                            <option value="Commercial">Commercial Office Space (2500 sq.ft)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-300 font-medium mb-1">Quality Grade Tier</label>
+                        <div class="grid grid-cols-3 gap-2 text-xs font-mono">
+                            <button onclick="setQualityTier('Standard')" class="tier-btn py-2 px-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-center hover:bg-white/10">Standard</button>
+                            <button onclick="setQualityTier('Premium')" class="tier-btn py-2 px-2 rounded-xl bg-cyan-500/20 border border-cyan-500 text-cyan-300 text-center font-bold">Premium</button>
+                            <button onclick="setQualityTier('Luxury')" class="tier-btn py-2 px-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-center hover:bg-white/10">Luxury</button>
+                        </div>
+                    </div>
+
+                    <button onclick="recalculateBudgetWithAI()" class="w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>AI Re-Optimize Budget Allocation</span>
+                    </button>
+                </div>
+
+                <!-- Budget Output Visualizer & Breakdown Table -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl p-6 space-y-6">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Estimated Trade Breakdown</h3>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400 font-mono">Total Net Cost:</span>
+                            <div class="text-xl font-extrabold font-mono text-cyan-400" id="total-budget-display">₹10,00,000</div>
+                        </div>
+                    </div>
+
+                    <!-- Donut Chart & Breakdown Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        <div class="md:col-span-5 h-48 flex items-center justify-center">
+                            <canvas id="budgetDonutChart"></canvas>
+                        </div>
+
+                        <div class="md:col-span-7 space-y-2 text-xs font-mono" id="budget-breakdown-list">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Furniture & Material Selection Section -->
+        <section id="materials" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-mono text-indigo-400 uppercase tracking-wider">
+                    <i data-lucide="sofa" class="w-3.5 h-3.5"></i> MODULE 3: MATERIAL & FURNITURE ADVISOR
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                    Curated Materials & <span class="gradient-text-purple">Smart Catalog</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Select verified materials with transparent pricing, durability grades, and real-time vendor availability.
+                </p>
+            </div>
+
+            <!-- Material Category Tabs -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button onclick="filterCatalogCategory('all')" class="cat-filter-btn px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs transition">All Catalog</button>
+                <button onclick="filterCatalogCategory('furniture')" class="cat-filter-btn px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs hover:bg-white/10 transition">🛋 Furniture</button>
+                <button onclick="filterCatalogCategory('tiles')" class="cat-filter-btn px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs hover:bg-white/10 transition">🔳 Tiles & Marble</button>
+                <button onclick="filterCatalogCategory('lighting')" class="cat-filter-btn px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs hover:bg-white/10 transition">💡 Lighting</button>
+                <button onclick="filterCatalogCategory('kitchen')" class="cat-filter-btn px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs hover:bg-white/10 transition">🍳 Kitchen Hardware</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="catalog-grid-container">
+                <!-- Dynamically rendered -->
+            </div>
+        </section>
+
+        <!-- 2D/3D Floor Planner & Virtual Tour -->
+        <section id="planner" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400 uppercase tracking-wider">
+                    <i data-lucide="layout" class="w-3.5 h-3.5"></i> MODULE 4: 2D/3D FLOOR PLANNER
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                    Interactive Grid <span class="gradient-text">2D Layout & 3D Walkthrough</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Manipulate room layouts on an interactive grid or orbit around an interactive 3D virtual room tour powered by Three.js.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-8 glass-panel rounded-2xl p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                        <div class="flex gap-2">
+                            <button onclick="togglePlannerView('2d')" id="planner-btn-2d" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs transition">
+                                📐 2D Grid Layout
+                            </button>
+                            <button onclick="togglePlannerView('3d')" id="planner-btn-3d" class="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-bold text-xs hover:bg-white/10 transition">
+                                🧊 3D Virtual Tour
+                            </button>
+                        </div>
+                        <span class="text-xs font-mono text-slate-400">Scale: 1 ft = 20px</span>
+                    </div>
+
+                    <!-- 2D Canvas Planner -->
+                    <div id="planner-2d-viewport" class="h-96 bg-slate-950/90 rounded-2xl border border-white/10 relative overflow-hidden flex items-center justify-center">
+                        <canvas id="floorPlannerCanvas" width="700" height="380" class="cursor-crosshair w-full h-full"></canvas>
+                        <div class="absolute bottom-3 left-3 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-slate-300">
+                            💡 Drag elements on canvas or click room nodes
+                        </div>
+                    </div>
+
+                    <!-- 3D Three.js Viewport -->
+                    <div id="planner-3d-viewport" class="hidden h-96 bg-slate-950 rounded-2xl border border-white/10 relative overflow-hidden">
+                        <div id="three-js-container" class="w-full h-full"></div>
+                        <div class="absolute bottom-3 left-3 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-slate-300">
+                            🖱 Click & Drag to Orbit 3D Room • Scroll to Zoom
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 glass-card rounded-2xl p-6 space-y-4">
+                    <h3 class="text-xs font-mono uppercase text-slate-300 font-bold tracking-wider">Room & Furniture Palette</h3>
+                    <div class="space-y-2 text-xs font-mono">
+                        <button onclick="addRoomNodeToCanvas('Master Bedroom', '#3b82f6')" class="w-full p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-300 text-left hover:bg-blue-500/20 transition flex justify-between items-center">
+                            <span>🛏 Master Bedroom</span>
+                            <span>14' x 12'</span>
+                        </button>
+                        <button onclick="addRoomNodeToCanvas('Modular Kitchen', '#10b981')" class="w-full p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-left hover:bg-emerald-500/20 transition flex justify-between items-center">
+                            <span>🍳 Modular Kitchen</span>
+                            <span>10' x 8'</span>
+                        </button>
+                        <button onclick="addRoomNodeToCanvas('Living Lounge', '#8b5cf6')" class="w-full p-3 rounded-xl bg-violet-500/10 border border-violet-500/30 text-violet-300 text-left hover:bg-violet-500/20 transition flex justify-between items-center">
+                            <span>🛋 Living Lounge</span>
+                            <span>18' x 14'</span>
+                        </button>
+                        <button onclick="addRoomNodeToCanvas('Luxury Bathroom', '#06b6d4')" class="w-full p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-left hover:bg-cyan-500/20 transition flex justify-between items-center">
+                            <span>🚿 Luxury Bathroom</span>
+                            <span>8' x 6'</span>
+                        </button>
+                    </div>
+
+                    <button onclick="clearPlannerCanvas()" class="w-full py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-slate-400 hover:text-white transition">
+                        Reset Canvas Nodes
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Timeline & Daily Progress Telemetry -->
+        <section id="timeline" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-mono text-amber-400 uppercase tracking-wider">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i> MODULE 5: PROJECT TELEMETRY & TIMELINE
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                    Execution Lifecycle & <span class="gradient-text-gold">Daily Progress Tracker</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Track your site milestone progress in real-time from civil work to final deep cleaning handover.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-8 text-center text-xs font-mono">
+                <div class="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-300 font-bold">1. Planning ✓</div>
+                <div class="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-300 font-bold">2. Design ✓</div>
+                <div class="p-3 rounded-xl bg-blue-500/20 border border-blue-500 text-blue-300 font-bold animate-pulse">3. Materials ⏳</div>
+                <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400">4. Civil Work</div>
+                <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400">5. Painting</div>
+                <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400">6. Furniture</div>
+                <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400">7. Handover</div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+                        <i data-lucide="camera" class="w-4 h-4 text-amber-400"></i> Today's Contractor Site Telemetry
+                    </h3>
+                    <span class="text-xs font-mono text-emerald-400 font-bold">Overall Progress: 42%</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="daily-progress-grid">
+                    <div class="glass-card rounded-xl p-3 space-y-2">
+                        <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80" alt="Electrical Work" class="w-full h-36 object-cover rounded-lg">
+                        <div class="text-xs font-bold text-white">Concealed Electrical Wiring</div>
+                        <div class="text-[10px] text-slate-400 font-mono">Uploaded by Electrician Lead • 10:30 AM</div>
+                    </div>
+                    <div class="glass-card rounded-xl p-3 space-y-2">
+                        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=500&q=80" alt="False Ceiling" class="w-full h-36 object-cover rounded-lg">
+                        <div class="text-xs font-bold text-white">Gypsum False Ceiling Frame</div>
+                        <div class="text-[10px] text-slate-400 font-mono">Uploaded by Gypsum Lead • 01:15 PM</div>
+                    </div>
+                    <div class="glass-card rounded-xl p-3 space-y-2">
+                        <img src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=500&q=80" alt="Tile Primer" class="w-full h-36 object-cover rounded-lg">
+                        <div class="text-xs font-bold text-white">Italian Tile Base Primer</div>
+                        <div class="text-[10px] text-slate-400 font-mono">Uploaded by Civil Contractor • 04:45 PM</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hire Professionals Marketplace -->
+        <section id="contractors" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-xs font-mono text-rose-400 uppercase tracking-wider">
+                    <i data-lucide="users" class="w-3.5 h-3.5"></i> MODULE 6: CONTRACTOR MARKETPLACE
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                    Verified Local <span class="gradient-text">Architects & Tradesmen</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Hire background-checked interior designers, plumbers, electricians, painters, and carpenters with fixed contract rates.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="contractors-grid">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- Client Dashboard & AI Contract Generator -->
+        <section id="dashboard" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-xs font-mono text-violet-400 uppercase tracking-wider">
+                    <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i> MODULE 7: CLIENT DASHBOARD
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                    Project Command Center & <span class="gradient-text-purple">Legal AI Contracts</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Monitor project burn rate, active workers, milestone invoices, and download auto-generated legal agreements.
+                </p>
+            </div>
+
+            <div class="glass-panel rounded-3xl border border-white/15 p-6 sm:p-8 space-y-8 shadow-2xl">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-mono">
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                        <div class="text-slate-400">Total Approved Budget</div>
+                        <div class="text-xl font-bold text-white">₹10,00,000</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                        <div class="text-slate-400">Paid / Disbursed</div>
+                        <div class="text-xl font-bold text-cyan-400">₹4,20,000</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                        <div class="text-slate-400">Remaining Balance</div>
+                        <div class="text-xl font-bold text-emerald-400">₹5,80,000</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                        <div class="text-slate-400">Active Site Workers</div>
+                        <div class="text-xl font-bold text-amber-400">6 Tradesmen</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center p-6 rounded-2xl bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-slate-900 border border-blue-500/30 gap-4">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-5 h-5 text-blue-400"></i> AI Legal Work Order & Contract Generator
+                        </h3>
+                        <p class="text-xs text-slate-300 mt-1">Generates binding legal agreements, milestone payment schedule, and material specs.</p>
+                    </div>
+                    <button onclick="generateAndExportContract()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-xs shadow-lg hover:shadow-blue-500/25 transition flex items-center gap-2 whitespace-nowrap">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        <span>Export AI Legal Contract (PDF)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Floating AI Consultant Chatbot Widget -->
+        <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-50">
+            <button onclick="toggleAiChatDrawer()" class="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 via-cyan-500 to-indigo-600 text-white font-bold flex items-center justify-center shadow-2xl shadow-blue-500/40 hover:scale-110 transition-transform">
+                <i data-lucide="bot" class="w-7 h-7"></i>
+            </button>
+
+            <div id="ai-chat-drawer" class="hidden fixed bottom-24 right-6 w-80 sm:w-96 glass-panel rounded-2xl border border-white/15 p-4 shadow-2xl space-y-3 z-50">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-blue-400"></i>
+                        <span class="text-xs font-bold text-white font-mono">InteriorAI Consultant</span>
+                    </div>
+                    <button onclick="toggleAiChatDrawer()" class="text-slate-400 hover:text-white">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div class="h-64 overflow-y-auto space-y-2 text-xs font-mono p-1" id="chat-messages-box">
+                    <div class="p-2.5 rounded-xl bg-white/5 text-slate-300">
+                        👋 Hello! I am your AI Interior Architect. Tell me about your property layout or budget questions!
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="chat-input-field" onkeyup="if(event.key==='Enter') sendChatMessage()" placeholder="e.g. Best tiles for 2BHK living room?" class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-xs text-white focus:outline-none focus:border-blue-500">
+                    <button onclick="sendChatMessage()" class="px-3 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Project Quiz Onboarding Modal -->
+        <div id="quiz-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="w-full max-w-lg glass-panel rounded-2xl border border-white/15 p-6 space-y-5">
+                <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                    <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                        <i data-lucide="bot" class="w-4 h-4 text-blue-400"></i> AI Interior Discovery Quiz
+                    </h3>
+                    <button onclick="closeAiConsultantModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+
+                <div class="space-y-4 text-xs font-mono">
+                    <div>
+                        <label class="block text-slate-300 font-bold mb-1">1. Property Type & Size</label>
+                        <select id="quiz-property-type" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white">
+                            <option>2BHK Apartment (1050 sq.ft)</option>
+                            <option>3BHK Luxury Villa (1800 sq.ft)</option>
+                            <option>Independent House Remodel</option>
+                            <option>Commercial Office</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 font-bold mb-1">2. Target Budget Limit</label>
+                        <select id="quiz-budget-tier" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white">
+                            <option value="600000">₹6,00,000 (Standard)</option>
+                            <option value="1000000" selected>₹10,00,000 (Premium)</option>
+                            <option value="2500000">₹25,00,000 (Luxury Royal)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 font-bold mb-1">3. Aesthetic Style</label>
+                        <select id="quiz-style-choice" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white">
+                            <option>Modern Scandinavian</option>
+                            <option>Luxury Italian Marble</option>
+                            <option>Minimalist Cyber</option>
+                            <option>Classic Heritage</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button onclick="closeAiConsultantModal()" class="px-4 py-2 rounded-xl bg-white/10 text-xs text-slate-300">Cancel</button>
+                    <button onclick="submitProjectQuiz()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-xs">Generate Project Blueprint</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Printable Contract Export Container Modal -->
+        <div id="contract-export-modal" class="fixed inset-0 z-50 bg-black/90 p-8 overflow-y-auto hidden">
+            <div class="max-w-3xl mx-auto bg-white text-slate-900 p-8 rounded-2xl space-y-6 shadow-2xl font-sans">
+                <div class="flex justify-between items-center border-b pb-4 border-slate-200">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-blue-900">INTERIOR AI — WORK AGREEMENT</h2>
+                        <p class="text-xs text-slate-500 font-mono">Ref: IA-2026-8891 • Legal Work Order & Tax Invoice</p>
+                    </div>
+                    <button onclick="document.getElementById('contract-export-modal').classList.add('hidden')" class="no-print px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs">Close</button>
+                </div>
+
+                <table class="w-full text-xs font-mono border-collapse border border-slate-200">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-800 border-b">
+                            <th class="p-2 text-left">Trade Component</th>
+                            <th class="p-2 text-right">Allocation (INR)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="printable-contract-items">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+
+                <div class="pt-6 flex justify-between items-center border-t border-slate-200">
+                    <div class="no-print">
+                        <button onclick="window.print()" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-md">🖨 Print / Download PDF</button>
+                    </div>
+                    <div class="text-xs font-mono text-slate-500 text-right">
+                        Authorized Signature: <span class="border-b border-slate-400 px-4 font-bold text-slate-900">InteriorAI System Agent</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Gallery -->
+        <section id="gallery" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 text-xs font-mono text-fuchsia-300 uppercase tracking-wider">
+                    <i data-lucide="image" class="w-3.5 h-3.5"></i> PROJECT GALLERY</div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Explore Our Design Portfolio</h2>
+                <p class="text-slate-400 text-sm sm:text-base">Browse 50 real interior and exterior transformations powered by InteriorAI’s live planning, style support, and trade execution tools.</p>
+            </div>
+
+            <div id="project-gallery-grid" class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"></div>
+        </section>
+
+        <!-- Contact & Consultation Section -->
+        <section id="contact" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-mono text-slate-400">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="home" class="w-4 h-4 text-blue-400"></i>
+                    <div>
+                        <div class="text-white font-bold">INTERIORAI</div>
+                        <div class="text-slate-500">Design. Build. Live.</div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-slate-300 font-semibold">
+                        <i data-lucide="phone-call" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Reach us</span>
+                    </div>
+                    <div class="text-slate-400">
+                        <a href="tel:+918008726709" class="text-white hover:text-cyan-300 transition">+91 80087 26709</a>
+                    </div>
+                    <div class="text-slate-400">
+                        <a href="mailto:interiorai.design@gmail.com" class="text-white hover:text-cyan-300 transition">interiorai.design@gmail.com</a>
+                    </div>
+                </div>
+                <div class="text-right md:text-left">
+                    <div class="text-slate-300 font-semibold">Powered by</div>
+                    <div>Express Backend & Gemini AI</div>
+                    <div class="text-slate-500 text-[11px] mt-2">Contact us for custom packages, developer support, and project scope details.</div>
+                </div>
+            </div>
+        </section>
+        <footer class="border-t border-white/10 bg-slate-950 py-10 mt-20 relative z-10">
+
+    <script>
+        lucide.createIcons();
+
+        let userApiKey = "";
+        let currentStudioCategory = "interior";
+        let currentStudioStyle = "Modern Minimal";
+        let targetBudget = 1000000;
+        let qualityTier = "Premium";
+        let budgetChartInstance = null;
+
+        const tradePercentages = {
+            "Furniture & Joinery": 0.28,
+            "Modular Kitchen": 0.22,
+            "Tiles & Flooring": 0.14,
+            "False Ceiling": 0.08,
+            "Electrical & Lighting": 0.08,
+            "Painting & Finishes": 0.06,
+            "Labour & Execution": 0.10,
+            "GST & Taxes (18%)": 0.04
+        };
+
+        const catalogItems = [
+            { id: 'mat-1', category: 'furniture', name: 'Italian Velvet 3-Seater Sofa', price: '₹68,000', rating: '4.9 ★', durability: 'Grade A1 Spill-Proof', img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=500&q=80' },
+            { id: 'mat-2', category: 'furniture', name: 'Solid Oak Dining Table (6 Seater)', price: '₹45,000', rating: '4.8 ★', durability: 'Teak Sealed Wood', img: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=500&q=80' },
+            { id: 'mat-3', category: 'tiles', name: 'Statuario Italian Marble Slab', price: '₹320 / sq.ft', rating: '5.0 ★', durability: 'High Gloss Polish', img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=80' },
+            { id: 'mat-4', category: 'lighting', name: 'Nordic Minimalist Chandelier', price: '₹18,500', rating: '4.7 ★', durability: '3000K LED Dimmable', img: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=500&q=80' }
+        ];
+
+        window.onload = function() {
+            initParticleCanvas();
+            initBeforeAfterSliders();
+            initBudgetChart();
+            renderCatalog('all');
+            fetchContractorsFromBackend();
+            init2DFloorPlanner();
+            init3DVirtualTour();
+        };
+
+        function initParticleCanvas() {
+            const canvas = document.getElementById('hero-bg-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = window.innerWidth;
+            let h = canvas.height = window.innerHeight;
+
+            const particles = Array.from({ length: 30 }, () => ({
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5, r: Math.random() * 2 + 1
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                ctx.fillStyle = '#3b82f6';
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > w) p.vx *= -1;
+                    if (p.y < 0 || p.y > h) p.vy *= -1;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'glass-card border border-blue-500/40 text-blue-300 px-4 py-2.5 rounded-xl text-xs font-mono shadow-xl';
+            toast.innerText = `✨ ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
+
+        function initBeforeAfterSliders() { setupSlider('studio-before-after', 'studio-after-clip'); }
+
+        function setupSlider(containerId, clipId) {
+            const container = document.getElementById(containerId);
+            const clip = document.getElementById(clipId);
+            if (!container || !clip) return;
+            let isDragging = false;
+
+            const updateClip = (x) => {
+                const rect = container.getBoundingClientRect();
+                let offsetX = x - rect.left;
+                if (offsetX < 0) offsetX = 0; if (offsetX > rect.width) offsetX = rect.width;
+                clip.style.width = `${(offsetX / rect.width) * 100}%`;
+            };
+
+            container.addEventListener('mousedown', () => isDragging = true);
+            window.addEventListener('mouseup', () => isDragging = false);
+            container.addEventListener('mousemove', (e) => { if (isDragging) updateClip(e.clientX); });
+        }
+
+        function setStudioCategory(cat) {
+            currentStudioCategory = cat;
+            showToast(`Switched Studio mode to ${cat.toUpperCase()}`);
+        }
+
+        function selectDesignStyle(styleName) {
+            currentStudioStyle = styleName;
+            document.getElementById('studio-active-style').innerText = styleName;
+            showToast(`Selected Architectural Style: ${styleName}`);
+        }
+
+        function quickSelectGoal(goalName) { showToast(`Selected Goal: ${goalName}. Budget parameters updated!`); }
+
+        function initBudgetChart() {
+            const ctx = document.getElementById('budgetDonutChart').getContext('2d');
+            budgetChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(tradePercentages),
+                    datasets: [{
+                        data: Object.values(tradePercentages).map(p => p * targetBudget),
+                        backgroundColor: ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e', '#6366f1', '#64748b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '72%' }
+            });
+            recalculateBudget();
+        }
+
+        function recalculateBudget() {
+            targetBudget = parseFloat(document.getElementById('budget-amount-input').value) || 1000000;
+            document.getElementById('total-budget-display').innerText = `₹${targetBudget.toLocaleString('en-IN')}`;
+
+            const breakdownContainer = document.getElementById('budget-breakdown-list');
+            const printableContainer = document.getElementById('printable-contract-items');
+
+            if (breakdownContainer) {
+                breakdownContainer.innerHTML = Object.entries(tradePercentages).map(([trade, pct]) => {
+                    const amount = targetBudget * pct;
+                    return `
+                        <div class="space-y-1">
+                            <div class="flex justify-between">
+                                <span class="text-slate-300 font-bold">${trade}</span>
+                                <span class="text-cyan-400 font-bold">₹${amount.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full" style="width: ${pct * 100}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            if (printableContainer) {
+                printableContainer.innerHTML = Object.entries(tradePercentages).map(([trade, pct]) => {
+                    const amount = targetBudget * pct;
+                    return `
+                        <tr class="border-b"><td class="p-2">${trade}</td><td class="p-2 text-right">₹${amount.toLocaleString('en-IN')}</td></tr>
+                    `;
+                }).join('');
+            }
+
+            if (budgetChartInstance) {
+                budgetChartInstance.data.datasets[0].data = Object.values(tradePercentages).map(p => p * targetBudget);
+                budgetChartInstance.update();
+            }
+        }
+
+        async function fetchContractorsFromBackend() {
+            try {
+                const res = await fetch('/api/contractors');
+                const data = await res.json();
+                if (data.success) {
+                    const container = document.getElementById('contractors-grid');
+                    container.innerHTML = data.contractors.map(c => `
+                        <div class="glass-card rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+                            <div class="flex items-center gap-3">
+                                <img src="${c.avatar_url}" alt="${c.name}" class="w-12 h-12 rounded-full object-cover border border-blue-500/40">
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">${c.name}</h4>
+                                    <p class="text-xs text-blue-400 font-mono">${c.specialty}</p>
+                                    <p class="text-[10px] text-slate-400 font-mono">${c.experience_years} Yrs Exp • ${c.rating} ★</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-white/10 text-xs font-mono">
+                                <span class="text-cyan-400 font-bold">${c.daily_rate}</span>
+                                <button onclick="showToast('Engaged contractor ${c.name}!')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition">Hire Trade</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.warn("Backend API offline, displaying cached contractors");
+            }
+        }
+
+        function renderCatalog(cat) {
+            const container = document.getElementById('catalog-grid-container');
+            const filtered = cat === 'all' ? catalogItems : catalogItems.filter(i => i.category === cat);
+            container.innerHTML = filtered.map(i => `
+                <div class="glass-card rounded-2xl p-4 space-y-3">
+                    <img src="${i.img}" class="w-full h-32 object-cover rounded-xl border border-white/10">
+                    <h4 class="text-xs font-bold text-white">${i.name}</h4>
+                    <div class="flex justify-between items-center text-xs font-mono text-cyan-400">
+                        <span>${i.price}</span>
+                        <button onclick="showToast('Added ${i.name} to material schedule')" class="px-2 py-1 rounded bg-blue-600/30 text-blue-300">+ Add</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCatalogCategory(cat) { renderCatalog(cat); }
+        function togglePlannerView(view) {
+            document.getElementById('planner-2d-viewport').classList.toggle('hidden', view !== '2d');
+            document.getElementById('planner-3d-viewport').classList.toggle('hidden', view !== '3d');
+        }
+
+        let canvas2D, ctx2D;
+        function init2DFloorPlanner() {
+            canvas2D = document.getElementById('floorPlannerCanvas');
+            if (!canvas2D) return;
+            ctx2D = canvas2D.getContext('2d');
+            ctx2D.fillStyle = 'rgba(59, 130, 246, 0.3)';
+            ctx2D.fillRect(50, 50, 200, 140);
+            ctx2D.fillStyle = '#ffffff'; ctx2D.fillText('Master Bedroom (14 x 12)', 60, 80);
+        }
+
+        function init3DVirtualTour() {
+            const container = document.getElementById('three-js-container');
+            if (!container || typeof THREE === 'undefined') return;
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(3, 3, 5); camera.lookAt(0, 0, 0);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth || 500, container.clientHeight || 300);
+            container.appendChild(renderer.domElement);
+            scene.add(new THREE.GridHelper(10, 10, 0x3b82f6, 0x1e293b));
+            function render3D() { requestAnimationFrame(render3D); renderer.render(scene, camera); }
+            render3D();
+        }
+
+        function toggleAiChatDrawer() { document.getElementById('ai-chat-drawer').classList.toggle('hidden'); }
+        function openAiConsultantModal() { document.getElementById('quiz-modal').classList.remove('hidden'); }
+        function closeAiConsultantModal() { document.getElementById('quiz-modal').classList.add('hidden'); }
+        function generateAndExportContract() { document.getElementById('contract-export-modal').classList.remove('hidden'); recalculateBudget(); }
+
+        async function submitContactForm() {
+            const name = document.getElementById('contact-name').value.trim();
+            const email = document.getElementById('contact-email').value.trim();
+            const phone = document.getElementById('contact-phone').value.trim();
+            const message = document.getElementById('contact-message').value.trim();
+            const status = document.getElementById('contact-form-status');
+
+            if (!name || !email || !phone || !message) {
+                status.innerText = 'Please fill in all fields before sending your request.';
+                return;
+            }
+
+            status.innerText = 'Sending request...';
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone, message })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    status.innerText = 'Request received! Our team will contact you shortly.';
+                    document.getElementById('contact-form').reset();
+                } else {
+                    status.innerText = 'Something went wrong. Please try again later.';
+                }
+            } catch (error) {
+                status.innerText = 'Unable to submit request. Check your connection.';
+            }
+        }
+
+        function renderProjectGallery() {
+            const gallery = document.getElementById('project-gallery-grid');
+            if (!gallery) return;
+            const images = Array.from({ length: 50 }, (_, index) => ({
+                src: `https://source.unsplash.com/800x600/?interior-design,interior,home,room,furniture&sig=${index}`,
+                fallback: `https://picsum.photos/seed/interior${index}/800/600`,
+                label: `Project ${index + 1}`
+            }));
+            gallery.innerHTML = images.map(img => `
+                <div class="glass-card rounded-3xl overflow-hidden bg-slate-950 border border-white/10 shadow-xl">
+                    <img src="${img.src}" alt="${img.label}" loading="lazy" class="w-full h-56 object-cover" onerror="this.onerror=null;this.src='${img.fallback}';">
+                    <div class="p-4">
+                        <h3 class="text-sm font-bold text-white">${img.label}</h3>
+                        <p class="text-[11px] text-slate-400 mt-1">Premium interior design & renovation showcase.</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.onload = function() {
+            initParticleCanvas();
+            initBeforeAfterSliders();
+            initBudgetChart();
+            renderCatalog('all');
+            fetchContractorsFromBackend();
+            init2DFloorPlanner();
+            init3DVirtualTour();
+            renderProjectGallery();
+        };
+    </script>
+</body>
+</html>
